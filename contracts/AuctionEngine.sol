@@ -20,6 +20,13 @@ contract AuctionEngine {
 
     Auction[] public auctions;
 
+    event ActionCreated(
+        uint256 index,
+        string itemName,
+        uint256 startingPrice,
+        uint256 duration
+    );
+
     constructor() {
         owner = msg.sender;
     }
@@ -47,5 +54,14 @@ contract AuctionEngine {
             item: _item,
             stopped: false
         });
+
+        auctions.push(newAuction);
+
+        emit ActionCreated(
+            auctions.length - 1,
+            _item,
+            _startingPrice,
+            duration
+        );
     }
 }
