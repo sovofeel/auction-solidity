@@ -12,9 +12,40 @@ contract AuctionEngine {
         uint256 startingPrice;
         uint256 finalPrice;
         uint256 startAt;
-        uint256 endAt;
+        uint256 endsAt;
         uint256 discountRate;
         string item;
         bool stopped;
+    }
+
+    Auction[] public auctions;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function createAuction(
+        uint256 _startingPrice,
+        uint256 _discountRate,
+        string calldata _item,
+        uint256 _duration
+    ) external {
+        uint256 duration = _duration == 0 ? DURATION : _duration;
+
+        require(
+            _startingPrice >= _discountRate * duration,
+            "incorrect starting price: "
+        );
+
+        Auction memory newAuction = Auction({
+            seller: payable(msg.sender),
+            startingPrice: _startingPrice,
+            finalPrice: _startingPrice,
+            discountRate: _discountRate,
+            startAt: block.timestamp,
+            endsAt: block.timestamp + duration,
+            item: _item,
+            stopped: false
+        });
     }
 }
