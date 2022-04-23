@@ -64,4 +64,31 @@ contract AuctionEngine {
             duration
         );
     }
+
+    function getPriceFor(uint256 index) public view returns (uint256) {
+        Auction memory currentAuction = auctions[index];
+        require(!currentAuction.stopped, "stopped");
+        uint256 elapsed = block.timestamp - currentAuction.startAt;
+        uint256 discount = currentAuction.discountRate * elapsed;
+        return currentAuction.startingPrice - discount;
+    }
+
+    function buy(uint256 index) external payable {
+        Auction memory currentAuction = auctions[index];
+        require(!currentAuction.stopped, "stopped");
+        require(block.timestamp < currentAuction.endsAt, "ended");
+        uint256 currentPrice = getPriceFor(index);
+        require(msg.value >= currentPrice, "not enought funds!");
+        currentAuction.stopped = true;
+        currentAuction.finalPrice = currentPrice;
+        uint256 refund = msg.value = currentPrice;
+
+        if (refund > 0) {
+            payable(msg.sender).transer(refund);
+        }
+
+        currentAuction.seller.transer(
+            currentPrice - ((currentPrice * FEE) / 100)
+        );
+    }
 }
