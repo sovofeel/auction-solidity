@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("AuctionEngine", function () {
+describe("AuctionEngine", () => {
     let owner
     let seller
     let buyer
@@ -15,8 +15,23 @@ describe("AuctionEngine", function () {
       await auction.deployed();
     })
 
-    it("sets owner", async () => {
-      const currentOwner = await auction.owner();
+    it("> sets correct owner", async () => {
+      const currentOwner = await auction.owner(); 
       expect(currentOwner).to.eq(owner.address)
+    })
+
+    describe("createAuction", () => {
+      it("> creates auction correctly", async () => {
+        const tx = await auction.createAuction(
+          ethers.utils.parseEther("0.0001"),
+          3,
+          "mock item",
+          60
+        )
+
+        const currentAuction =  await auction.auctions(0)
+        expect(currentAuction.item).to.eq("mock item")
+         
+      });
     })
 });

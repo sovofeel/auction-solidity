@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx hardhat coverage",
+    "re": "npx hardhat clean && pnx hardhat compile && npm run bench",
+    "bench": "npx hardhat run srcipts/bench.js --network localhost"
   },
   "author": "sovofeel",
   "license": "ISC",
@@ -15,5 +17,8 @@
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.6.4",
     "hardhat": "^2.9.3"
+  },
+  "dependencies": {
+    "solidity-coverage": "^0.7.21"
   }
 }
