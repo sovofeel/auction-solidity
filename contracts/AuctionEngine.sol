@@ -75,11 +75,6 @@ contract AuctionEngine {
         return currentAuction.startingPrice - discount;
     }
 
-    //function stop(uint index) {
-    //    Auction storage currentAuction = auctions[index];
-    //    currentAuction.stopped = true;
-    //}
-
     function buy(uint256 index) external payable {
         Auction storage currentAuction = auctions[index];
         require(!currentAuction.stopped, "stopped");
