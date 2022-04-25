@@ -27,6 +27,8 @@ contract AuctionEngine {
         uint256 duration
     );
 
+    event AuctionEnded(uint256 index, uint256 finalPrice, address winner);
+
     constructor() {
         owner = msg.sender;
     }
@@ -73,22 +75,29 @@ contract AuctionEngine {
         return currentAuction.startingPrice - discount;
     }
 
+    //function stop(uint index) {
+    //    Auction storage currentAuction = auctions[index];
+    //    currentAuction.stopped = true;
+    //}
+
     function buy(uint256 index) external payable {
-        Auction memory currentAuction = auctions[index];
+        Auction storage currentAuction = auctions[index];
         require(!currentAuction.stopped, "stopped");
         require(block.timestamp < currentAuction.endsAt, "ended");
         uint256 currentPrice = getPriceFor(index);
         require(msg.value >= currentPrice, "not enought funds!");
         currentAuction.stopped = true;
         currentAuction.finalPrice = currentPrice;
-        uint256 refund = msg.value = currentPrice;
+        uint256 refund = msg.value - currentPrice;
 
         if (refund > 0) {
-            payable(msg.sender).transer(refund);
+            payable(msg.sender).transfer(refund);
         }
 
-        currentAuction.seller.transer(
+        currentAuction.seller.transfer(
             currentPrice - ((currentPrice * FEE) / 100)
         );
+
+        emit AuctionEnded(index, currentPrice, msg.sender);
     }
 }
