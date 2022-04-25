@@ -20,18 +20,28 @@ describe("AuctionEngine", () => {
       expect(currentOwner).to.eq(owner.address)
     })
 
+    async function getTmeStamp(bn) {
+      return (
+        await ethers.provider.getBlock(bn)
+      ).timestamp
+    }
+
     describe("createAuction", () => {
       it("> creates auction correctly", async () => {
+        const duration = 60
         const tx = await auction.createAuction(
           ethers.utils.parseEther("0.0001"),
           3,
           "mock item",
-          60
+          duration
         )
 
         const currentAuction =  await auction.auctions(0)
-        expect(currentAuction.item).to.eq("mock item")
+        expect(currentAuction.item).to.eq("mock item") 
          
+
+        const ts = getTmeStamp(tx.blocknumber)
+        expect(currentAuction.endsAt).to.eq(ts + duration)
       });
     })
 });
